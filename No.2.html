@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ujian Fundamental | Vincentius</title>
+    <style>
+        table,tr,td{
+            border: 1px solid rgb(195, 153, 229);
+            border-collapse: collapse;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Mading</h1>
+        <div>Username: <input type="text" id="inputUsername"></div><br>
+        <div>Password: <input type="text" id="inputPassword"></div><br>
+        <div><input type="button" value="Login" onclick="login()"></div><br>
+        <table>
+            <thead>
+                <tr>
+                    <td>No</td>
+                    <td>Kegiatan</td>
+                    <td>Hari</td>
+                    <td>Poster</td>
+                    <td>Act</td>
+                </tr>
+            </thead>
+            <tbody id="isiTbody">
+                
+            </tbody>
+        </table>
+        <div id="info"></div>
+    </center>
+</body>
+<!-- Tempat Corat Coret-->
+
+<!-- Tempat Corat Coret-->
+<script>
+//Object Constructer Data Pengguna
+class cetakanPengguna {
+    constructor (username,password,role){
+        this.username=username,
+        this.password=password,
+        this.role=role;
+    }  
+}
+
+dataPengguna=[
+    new cetakanPengguna('dino','dino','user'),
+    new cetakanPengguna('admin','admin','admin')
+]
+
+class cetakanKegiatan{
+    constructor(kegiatan,hari,poster){
+        this.kegiatan=kegiatan,
+        this.hari=hari,
+        this.poster=poster;
+    }
+}
+
+dataKegiatan=[
+    new cetakanKegiatan('lari','Senin','linkImage'),
+    new cetakanKegiatan('estafet','Selasa','linkImage2'),
+]
+
+function checkLogin(username,password){
+    for(var i=0;i<dataPengguna.length;i++){
+        if(username==dataPengguna[i].username && password==dataPengguna[i].password){
+            return dataPengguna[i].role;
+        } 
+    }
+}
+
+function login(){
+    var username = document.getElementById('inputUsername').value;
+    var password = document.getElementById('inputPassword').value;
+    if(checkLogin(username,password)=='admin'){
+        document.getElementById('inputUsername').value=null;
+        document.getElementById('inputPassword').value=null;
+        printMenuAdmin();
+        document.getElementById('info').innerHTML=`
+        <h1>${username}</h1>
+        <div><input type="button" value="Logout" onclick="logout()"></div>
+        `
+    } else if (checkLogin(username,password)=='user') {
+        document.getElementById('inputUsername').value=null;
+        document.getElementById('inputPassword').value=null;
+        document.getElementById('info').innerHTML=`
+        <h1>${username}</h1>
+        <div><input type="button" value="Logout" onclick="logout()"></div>
+        `
+        printMenuUser();
+    } else {
+        document.getElementById('inputUsername').value=null;
+        document.getElementById('inputPassword').value=null;
+        document.getElementById('info').innerHTML=`
+            <h1>password salah</h1>
+        `
+    }
+}
+
+
+
+
+function printMenuAdmin(index){
+    output=''; outputDelete='';
+    for(var i=0;i<dataKegiatan.length;i++){
+        if(index==i){
+            output+=`
+            <tr>
+                <td>${i+1}</td>
+                <td><input type="text" id="editKegiatan"></td>
+                <td>
+                    <select id="editHari">
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                        <option value="Minggu">Minggu</option>
+                    </select>
+                </td>
+                <td><input type="text" id="editPoster"></td>
+                <td>
+                    <input type="button" value="Cancel" onclick="printMenuAdmin()">
+                    <input type="button" value="Save" onclick="confirmEdit(${i})">
+                </td>
+                </td>
+            </tr>
+            `
+        } else {
+            output+=`
+            <tr>
+                <td>${i+1}</td>
+                <td>${dataKegiatan[i].kegiatan}</td>
+                <td>${dataKegiatan[i].hari}</td>
+                <td><img src="${dataKegiatan[i].poster}" alt="photo" width="200px"></td>
+                <td id="konfirmasi">
+                    <input type="button" value="Delete" onclick="deleteKegiatan(${i})">
+                    <input type="button" value="Edit" onclick="printMenuAdmin(${i})">
+                </td>
+            </tr>
+            ` 
+        }
+        if(i==dataKegiatan.length-1 ){
+            output+=`
+            <tr>
+                <td></td>
+                <td><input type="text" id="addKegiatan"></td>
+                <td>
+                    <select id="addHari">
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                        <option value="Minggu">Minggu</option>
+                    </select>
+                </td>
+                <td><input type="text" id="addPoster"></td>
+                <td>
+                    <input type="button" value="Add To do" onclick="addTodo()">
+                </td>
+                </td>
+            </tr>
+            `
+        }
+    }
+   
+    document.getElementById('isiTbody').innerHTML=output;   
+}
+
+function deleteKegiatan(index){
+    document.getElementById('konfirmasi').innerHTML=`
+        <input type="button" value="No" onclick="printMenuAdmin()">
+        <input type="button" value="Yes" onclick="cekDelete(${index})"> 
+    `
+}
+
+function cekDelete(index){
+    dataKegiatan.splice(index,1);
+    printMenuAdmin();
+}
+
+function addTodo(){
+    var addKegiatan = document.getElementById('addKegiatan').value;
+    var addHari = document.getElementById('addHari').value;
+    var addPoster = document.getElementById('addPoster').value;
+    dataKegiatan.push(new cetakanKegiatan(addKegiatan,addHari,addPoster));
+    printMenuAdmin();
+}
+
+function confirmEdit(index){
+    var editKegiatan = document.getElementById('editKegiatan').value
+    var editHari = document.getElementById('editHari').value
+    var editPoster = document.getElementById('editPoster').value
+    if(editKegiatan==''){
+        editKegiatan=dataKegiatan[index].kegiatan;
+    }
+    if(editHari==''){
+        editHari=dataKegiatan[index].hari;
+    }
+    if(editPoster==''){
+        editPoster=dataKegiatan[index].poster;
+    }
+
+    dataKegiatan[index].kegiatan=editKegiatan;
+    dataKegiatan[index].hari=editHari;
+    dataKegiatan[index].poster=editPoster;
+
+    printMenuAdmin();
+
+}
+
+function logout(){
+    document.getElementById('isiTbody').innerHTML=``
+    document.getElementById('info').innerHTML=``
+    document.getElementById('inputUsername').value=null;
+    document.getElementById('inputPassword').value=null;
+}
+
+
+function printMenuUser(){
+    output='';
+    for(var i=0;i<dataKegiatan.length;i++){
+        output+=`
+        <tr>
+            <td>${i+1}</td>
+            <td>${dataKegiatan[i].kegiatan}</td>
+            <td>${dataKegiatan[i].hari}</td>
+            <td><img src="${dataKegiatan[i].poster}" alt="Image"></td>
+            <td></td>
+        </tr>
+        `
+        }
+    document.getElementById('isiTbody').innerHTML=output;   
+    }
+    
+</script>
+</html>
